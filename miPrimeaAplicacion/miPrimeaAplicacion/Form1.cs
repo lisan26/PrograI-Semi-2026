@@ -8,73 +8,262 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace miPrimeaAplicacion {
-    public partial class Form1 : Form {
-        public Form1() {
+namespace miPrimeaAplicacion
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
             InitializeComponent();
         }
 
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
+        Conexion objConexion = new Conexion();
+        DataSet ds = new DataSet();
+        DataTable dt = new DataTable();
+        String accion = "nuevo";
+        int posicion = 0;
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            obtenerDatos();
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void obtenerDatos()
         {
+            ds.Clear();
+            ds = objConexion.obtenerDatos();
+            dt = ds.Tables["alumnos"];
 
+            // Establecer la clave primaria para poder buscar filas específicas por ID
+            dt.PrimaryKey = new DataColumn[] { dt.Columns["idAlumno"] };
+
+            // Asignar los datos al DataGridView
+            dataGridView1.DataSource = dt.DefaultView;
+
+            mostrarDatos();
         }
 
-        private void txtTelefonoAlumno_TextChanged(object sender, EventArgs e)
+        private void mostrarDatos()
         {
+            if (dt.Rows.Count > 0 && posicion >= 0 && posicion < dt.Rows.Count)
+            {
+                txtCodigoAlumno.Text = dt.Rows[posicion]["codigo"].ToString();
+                txtNombreAlumno.Text = dt.Rows[posicion]["nombre"].ToString();
+                txtDireccionAlumno.Text = dt.Rows[posicion]["direccion"].ToString();
+                txtTelefonoAlumno.Text = dt.Rows[posicion]["telefono"].ToString();
+                txtEmailAlumno.Text = dt.Rows[posicion]["email"].ToString();
 
+                lblRegistrosAlumnos.Text = (posicion + 1) + " de " + dt.Rows.Count;
+            }
+            else
+            {
+                limpiarControles();
+                lblRegistrosAlumnos.Text = "0 de 0";
+            }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void limpiarControles()
         {
-
+            txtCodigoAlumno.Text = "";
+            txtNombreAlumno.Text = "";
+            txtDireccionAlumno.Text = "";
+            txtTelefonoAlumno.Text = "";
+            txtEmailAlumno.Text = "";
         }
 
-        private void btnModificarAlumno_Click(object sender, EventArgs e)
-        {
+        // --- LÓGICA DE BÚSQUEDA Y FILTRADO ---
 
+        private void txtBuscarAlumno_KeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                filtrarDatos(txtBuscarAlumno.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
-        private void lblEmailAlumno_Click(object sender, EventArgs e)
+        private void filtrarDatos(string valor)
         {
+            try
+            {
+                DataView dv = dt.DefaultView;
+                // Filtra por código o por nombre
+                dv.RowFilter = "codigo LIKE '%" + valor + "%' OR nombre LIKE '%" + valor + "%'";
+                dataGridView1.DataSource = dv;
 
+                seleccionarAlumnoDesdeGrid();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
-        private void lblTelefonoAlumno_Click(object sender, EventArgs e)
+        private void seleccionarAlumnoDesdeGrid()
         {
+            try
+            {
+                if (dataGridView1.CurrentRow == null) return;
 
+                // Obtener el ID del alumno de la fila seleccionada en el DataGridView
+                string id = dataGridView1.CurrentRow.Cells["idAlumno"].Value.ToString();
+
+                // Actualizar la posición actual en la DataTable
+                posicion = dt.Rows.IndexOf(dt.Rows.Find(id));
+
+                mostrarDatos();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
-        private void txtDireccionAlumno_TextChanged(object sender, EventArgs e)
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            seleccionarAlumnoDesdeGrid();
         }
 
-        private void lblDireccionAlumno_Click(object sender, EventArgs e)
-        {
+        // --- CONTROLES Y NAVEGACIÓN ---
 
+        private void activarDesactivarCtrls(Boolean estado)
+        {
+            grbDatos.Enabled = estado;
+            grbNavegacion.Enabled = !estado;
         }
 
-        private void txtNombreAlumno_TextChanged(object sender, EventArgs e)
+        private void btnAgregarAlumno_Click(object sender, EventArgs e)
         {
+            if (btnAgregarAlumno.Text == "Agregar")
+            {
+                btnAgregarAlumno.Text = "Guardar";
+                btnModificarALumno.Text = "Cancelar";
+                accion = "nuevo";
+                limpiarControles();
+                activarDesactivarCtrls(true);
+            }
+            else // Guardar datos
+            {
+                string idAlumno = dt.Rows.Count > 0 && posicion >= 0 && posicion < dt.Rows.Count
+                ? dt.Rows[posicion]["idAlumno"].ToString()
+                : "0";
 
+                string[] datosAlumno = {
+                idAlumno,
+                txtCodigoAlumno.Text,
+                txtNombreAlumno.Text,
+                txtDireccionAlumno.Text,
+                txtTelefonoAlumno.Text,
+                txtEmailAlumno.Text
+                };
+
+                string respuesta = objConexion.administrarDatosAlumnos(datosAlumno, accion);
+
+                if (respuesta == "1")
+                {
+                    activarDesactivarCtrls(false);
+                    btnAgregarAlumno.Text = "Agregar";
+                    btnModificarALumno.Text = "Modificar";
+                    obtenerDatos();
+                }
+                else
+                {
+                    MessageBox.Show(respuesta, "Error al guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
-        private void lblNombreAlumno_Click(object sender, EventArgs e)
+        private void btnModificarALumno_Click(object sender, EventArgs e)
         {
-
+            if (btnModificarALumno.Text == "Modificar")
+            {
+                btnAgregarAlumno.Text = "Guardar";
+                btnModificarALumno.Text = "Cancelar";
+                accion = "modificar";
+                activarDesactivarCtrls(true);
+            }
+            else // Cancelar
+            {
+                mostrarDatos();
+                activarDesactivarCtrls(false);
+                btnAgregarAlumno.Text = "Agregar";
+                btnModificarALumno.Text = "Modificar";
+            }
         }
 
-        private void txtCodigoAlumno_TextChanged(object sender, EventArgs e)
+        private void btnEliminar_Click(object sender, EventArgs e)
         {
+            if (dt.Rows.Count > 0 && posicion >= 0 && posicion < dt.Rows.Count)
+            {
+                if (MessageBox.Show("¿Está seguro de eliminar a " + txtNombreAlumno.Text + "?",
+                "Eliminar Alumno", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    string idAlumno = dt.Rows[posicion]["idAlumno"].ToString();
+                    string[] datosAlumno = { idAlumno, "", "", "", "", "" };
 
+                    string respuesta = objConexion.administrarDatosAlumnos(datosAlumno, "eliminar");
+
+                    if (respuesta == "1")
+                    {
+                        posicion = 0;
+                        obtenerDatos();
+                    }
+                    else
+                    {
+                        MessageBox.Show(respuesta, "Error al eliminar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("No hay registros para eliminar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
-        private void lblCodigoAlumno_Click(object sender, EventArgs e)
+        private void btnSiguienteAlumno_Click(object sender, EventArgs e)
+        {
+            if (posicion < dt.Rows.Count - 1)
+            {
+                posicion++;
+                mostrarDatos();
+            }
+        }
+
+        private void btnAnteriorAlumno_Click(object sender, EventArgs e)
+        {
+            if (posicion > 0)
+            {
+                posicion--;
+                mostrarDatos();
+            }
+        }
+
+        private void btnUltimoAlumno_Click(object sender, EventArgs e)
+        {
+            if (dt.Rows.Count > 0)
+            {
+                posicion = dt.Rows.Count - 1;
+                mostrarDatos();
+            }
+        }
+
+        private void btnPrimeroAlumno_Click(object sender, EventArgs e)
+        {
+            if (dt.Rows.Count > 0)
+            {
+                posicion = 0;
+                mostrarDatos();
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
