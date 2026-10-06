@@ -50,7 +50,7 @@ namespace miPrimeaAplicacion
                 txtCodigoAlumno.Text = dt.Rows[posicion]["codigo"].ToString();
                 txtNombreAlumno.Text = dt.Rows[posicion]["nombre"].ToString();
                 txtDireccionAlumno.Text = dt.Rows[posicion]["direccion"].ToString();
-                txtTelefonoAlumno.Text = dt.Rows[posicion]["telefono"].ToString();
+                txtTelefonoAlumno.Text = dt.Rows[posicion]["telefono "].ToString();
                 txtEmailAlumno.Text = dt.Rows[posicion]["email"].ToString();
 
                 lblRegistrosAlumnos.Text = (posicion + 1) + " de " + dt.Rows.Count;
@@ -133,6 +133,8 @@ namespace miPrimeaAplicacion
         {
             grbDatos.Enabled = estado;
             grbNavegacion.Enabled = !estado;
+            btnEliminar.Enabled = !estado;
+            txtBuscarAlumno.Enabled = !estado;
         }
 
         private void btnAgregarAlumno_Click(object sender, EventArgs e)
@@ -264,6 +266,16 @@ namespace miPrimeaAplicacion
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtBuscarAlumno_TextChanged(object sender, EventArgs e)
         {
 
         }
