@@ -58,5 +58,35 @@ namespace miPrimeaAplicacion.Properties {
                 resourceCulture = value;
             }
         }
+        internal static global::System.Drawing.Bitmap icon_alumnos {
+            get {
+                return (global::System.Drawing.Bitmap)ResourceManager.GetObject("icon_alumnos", resourceCulture);
+            }
+        }
+
+        internal static global::System.Drawing.Bitmap icon_materias {
+            get {
+                return (global::System.Drawing.Bitmap)ResourceManager.GetObject("icon_materias", resourceCulture);
+            }
+        }
+
+        internal static global::System.Drawing.Bitmap icon_periodos {
+            get {
+                return (global::System.Drawing.Bitmap)ResourceManager.GetObject("icon_periodos", resourceCulture);
+            }
+        }
+
+        internal static global::System.Drawing.Bitmap icon_notas {
+            get {
+                return (global::System.Drawing.Bitmap)ResourceManager.GetObject("icon_notas", resourceCulture);
+            }
+        }
+
+        internal static global::System.Drawing.Bitmap icon_salir {
+            get {
+                return (global::System.Drawing.Bitmap)ResourceManager.GetObject("icon_salir", resourceCulture);
+            }
+        }
+
     }
 }
