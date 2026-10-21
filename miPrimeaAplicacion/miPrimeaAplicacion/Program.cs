@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
 namespace miPrimeaAplicacion {
@@ -11,9 +9,14 @@ namespace miPrimeaAplicacion {
         /// </summary>
         [STAThread]
         static void Main() {
+            string carpetaProyecto = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", ".."));
+            if (File.Exists(Path.Combine(carpetaProyecto, "db_academica.mdf"))) {
+                AppDomain.CurrentDomain.SetData("DataDirectory", carpetaProyecto);
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmPrincipal());
+            Application.Run(new login());
         }
     }
 }

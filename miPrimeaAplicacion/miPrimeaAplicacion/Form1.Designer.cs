@@ -56,7 +56,6 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.lbl = new System.Windows.Forms.Label();
             this.idAlumno = new System.Windows.Forms.Label();
-            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.codigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.nombre = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -359,12 +358,6 @@
             this.idAlumno.Size = new System.Drawing.Size(13, 13);
             this.idAlumno.TabIndex = 11;
             this.idAlumno.Text = "0";
-            // 
-            // ID
-            // 
-            this.ID.HeaderText = "Column1";
-            this.ID.Name = "ID";
-            // 
             // id
             // 
             this.id.DataPropertyName = "idAlumno";
@@ -461,7 +454,6 @@
         private System.Windows.Forms.Button btnEliminarAlumno;
         private System.Windows.Forms.Label lbl;
         private System.Windows.Forms.Label idAlumno;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
         private System.Windows.Forms.DataGridViewTextBoxColumn id;
         private System.Windows.Forms.DataGridViewTextBoxColumn codigo;
         private System.Windows.Forms.DataGridViewTextBoxColumn nombre;
